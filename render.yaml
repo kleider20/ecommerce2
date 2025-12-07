@@ -1,0 +1,41 @@
+# render.yaml
+services:
+  - type: web
+    name: ecommerce2
+    env: phpdocker
+    region: frankfurt
+    buildCommand: "composer install --optimize-autoloader --no-dev && php artisan config:cache && php artisan route:cache"
+    startCommand: "php-fpm"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        value: https://ecommerce2.onrender.com
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: ecommerce2-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: ecommerce2-db
+          property: port
+      - key: DB_DATABASE
+          name: ecommerce2-db
+          property: database
+      - key: DB_USERNAME
+          name: ecommerce2-db
+          property: user
+      - key: DB_PASSWORD
+          name: ecommerce2-db
+          property: password
+      - key: APP_KEY
+        generateValue: true
+
+databases:
+  - name: ecommerce2-db
+    databaseName: ecommerce2_db
+    user: ecommerce2_user
