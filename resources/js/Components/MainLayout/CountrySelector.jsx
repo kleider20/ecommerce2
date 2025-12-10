@@ -1,5 +1,5 @@
 // resources/js/Components/CountrySelector.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { ChevronDownIcon } from 'primereact/icons/chevrondown';
 import { ChevronRightIcon } from 'primereact/icons/chevronright';
@@ -7,21 +7,17 @@ import { usePage, router } from '@inertiajs/react';
 
 export default function CountrySelector() {
   const { props } = usePage();
-  const { globalConfig, availableCountries = [] } = props;
+
+  // ✅ Usa 'selectedCountryIso2' (del middleware corregido)
+  const { selectedCountryIso2, availableCountries = [] } = props;
 
   const primeCountries = availableCountries.map(country => ({
     name: country.name,
     code: country.iso2,
   }));
 
-  const currentCountryCode = globalConfig?.country_code || 'VE';
-  const selectedCountry = primeCountries.find(c => c.code === currentCountryCode) || null;
-
-  /* const handleCountryChange = (e) => {
-    if (e.value) {
-      router.post('/set-country', { country_code: e.value.code });
-    }
-  }; */
+  // ✅ Selecciona el país basado en 'selectedCountryIso2'
+  const selectedCountry = primeCountries.find(c => c.code === selectedCountryIso2) || null;
 
   const handleCountryChange = (e) => {
     if (e.value?.code) {
