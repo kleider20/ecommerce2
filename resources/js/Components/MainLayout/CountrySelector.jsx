@@ -17,8 +17,14 @@ export default function CountrySelector() {
   const currentCountryCode = globalConfig?.country_code || 'VE';
   const selectedCountry = primeCountries.find(c => c.code === currentCountryCode) || null;
 
-  const handleCountryChange = (e) => {
+  /* const handleCountryChange = (e) => {
     if (e.value) {
+      router.post('/set-country', { country_code: e.value.code });
+    }
+  }; */
+
+  const handleCountryChange = (e) => {
+    if (e.value?.code) {
       router.post('/set-country', { country_code: e.value.code });
     }
   };

@@ -10,4 +10,13 @@ export default defineConfig({
         }),
         react(),
     ],
+
+    // server: {
+    //     host: 'ecommerce.test', // ← tu dominio local
+    //     hmr: {
+    //         host: 'ecommerce.test'
+    //     },
+    //     // Esto hace que Vite use HTTPS (con el certificado de Laragon/Valet)
+    //     https: true
+    // }
 });

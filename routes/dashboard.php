@@ -9,6 +9,7 @@ use App\Http\Controllers\Provider\ProductController;
 use App\Http\Controllers\SuperAdmin\GeneralSettingController;
 
 use App\Http\Controllers\SuperAdmin\CurrencySettingController;
+use App\Http\Controllers\CountryController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -38,6 +39,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/categorias/crear', [CategoryController::class, 'create'])->name('crear.categorias');
 
+
+
+
+        Route::post('/set-country', [CountryController::class, 'setCountry'])->name('set-country');
     });
 
     // Productos (protegido por permisos en el controlador)

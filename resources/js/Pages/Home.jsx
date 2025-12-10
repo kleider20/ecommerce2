@@ -171,36 +171,49 @@ const HomePage = ({ products, userConfig }) => {
     }
   ]; */
 
-  const categories = useMemo(() => {
-    const uniqueCategories = [...new Set(products.map(p => p.category))];
-    return [
-      { id: 'todos', name: 'Todos los Productos', count: products.length },
-      ...uniqueCategories.map(cat => ({
-        id: cat,
-        name: cat.charAt(0).toUpperCase() + cat.slice(1),
-        count: products.filter(p => p.category === cat).length
-      })).sort((a, b) => a.name.localeCompare(b.name))
-    ];
-  }, [products]);
+    const categories = useMemo(() => {
+        // Filtrar productos con categoría válida
+        const validProducts = products.filter(p => p.category && p.category.name);
 
-  const filteredProducts = useMemo(() => {
+        // Obtener categorías únicas
+        const uniqueCategories = [...new Set(validProducts.map(p => p.category.name))];
+
+        return [
+            { id: 'todos', name: 'Todos los Productos', count: validProducts.length },
+            ...uniqueCategories.map(catName => ({
+            id: catName,
+            name: catName.charAt(0).toUpperCase() + catName.slice(1),
+            count: validProducts.filter(p => p.category.name === catName).length
+            })).sort((a, b) => a.name.localeCompare(b.name))
+        ];
+    }, [products]);
+
+    const filteredProducts = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     let filtered = products.filter(p => {
-      const inCategory = selectedCategory === 'todos' || p.category === selectedCategory;
-      if (!inCategory) return false;
-      if (!term) return true;
-      return p.name.toLowerCase().includes(term) || p.description.toLowerCase().includes(term);
+        // Verificar que la categoría exista
+        const hasValidCategory = p.category && p.category.name;
+        const inCategory = selectedCategory === 'todos' ||
+                        (hasValidCategory && p.category.name === selectedCategory);
+
+        if (!inCategory) return false;
+        if (!term) return true;
+
+        return (
+        p.name.toLowerCase().includes(term) ||
+        p.description.toLowerCase().includes(term)
+        );
     });
 
     return [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case 'precio-asc': return a.price - b.price;
-        case 'precio-desc': return b.price - a.price;
-        case 'calificacion': return b.rating - a.rating;
-        default: return b.reviews - a.reviews; // popularidad
-      }
+        switch (sortBy) {
+        case 'precio-asc': return a.price_usd - b.price_usd;
+        case 'precio-desc': return b.price_usd - a.price_usd;
+        case 'calificacion': return (b.rating || 0) - (a.rating || 0);
+        default: return (b.reviews || 0) - (a.reviews || 0);
+        }
     });
-  }, [searchTerm, selectedCategory, sortBy, products]);
+    }, [searchTerm, selectedCategory, sortBy, products]);
 
   const handleClearFilters = () => {
     setSearchTerm('');

@@ -26,7 +26,7 @@ class HomeController extends Controller
         //     ])
         //     ->get();
 
-        $products = Product::where('is_active', true)->where('in_stock', true)->get(); // Asegúrate de que haya datos
+        $products = Product::with('category')->where('is_active', true)->where('in_stock', true)->get(); // Asegúrate de que haya datos
 
 
         $globalConfig = $geoService->getConfigForUser($request);

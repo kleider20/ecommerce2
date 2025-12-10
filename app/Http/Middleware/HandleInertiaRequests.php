@@ -4,46 +4,72 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-
 use Illuminate\Support\Facades\Auth;
-
-use App\Services\CountryService;
+use Illuminate\Support\Facades\DB;
 use App\Models\GeneralSetting;
+use App\Models\Country;
 
 class HandleInertiaRequests extends Middleware
 {
-    /**
-     * The root template that is loaded on the first page visit.
-     *
-     * @var string
-     */
     protected $rootView = 'app';
 
-    /**
-     * Determine the current asset version.
-     */
     public function version(Request $request): ?string
     {
         return parent::version($request);
     }
 
-    /**
-     * Define the props that are shared by default.
-     *
-     * @return array<string, mixed>
-     */
     public function share(Request $request): array
     {
-        $settings = GeneralSetting::current();
+        // 1. Obtener configuración global (con valor por defecto seguro)
+        $settings = GeneralSetting::first() ?? GeneralSetting::create([
+            'site_name' => 'Mi Tienda',
+            'operating_country_iso2' => 'VE',
+            'base_currency_code' => 'USD',
+        ]);
 
-        // Obtiene el nombre de tu tienda desde la base de datos
-        $siteName = GeneralSetting::current()->site_name;
+        // 2. País del usuario (de sesión) o país base
+        $baseCountryIso2 = $settings->operating_country_iso2;
+        $userCountryIso2 = session('user_country_iso2', $baseCountryIso2);
+
+        // 3. Cargar país del usuario (con respaldo al país base)
+        $userCountry = Country::where('iso2', $userCountryIso2)->first()
+            ?? Country::where('iso2', $baseCountryIso2)->first();
+
+        // Si ni siquiera el país base existe, usa un fallback mínimo
+        if (!$userCountry) {
+            $userCountry = (object) [
+                'iso2' => 'VE',
+                'currency_code' => 'VES',
+                'currency_symbol' => 'Bs',
+                'exchange_rate_to_usd' => 243.11,
+                'currency_thousand_separator' => '.',
+                'currency_decimal_separator' => ',',
+                'currency_decimal_digits' => 2,
+                'currency_symbol_position' => 'after',
+                'locale' => 'es-VE',
+            ];
+        }
+
+        // 4. userConfig con protección contra null
+        $userConfig = [
+            'country_iso2' => $userCountry->iso2 ?? 'VE',
+            'currency_code' => $userCountry->currency_code ?? 'VES',
+            'currency_symbol' => $userCountry->currency_symbol ?? 'Bs',
+            'exchange_rate_to_usd' => (float) ($userCountry->exchange_rate_to_usd ?? 243.11),
+            'thousand_separator' => $userCountry->currency_thousand_separator ?? '.',
+            'decimal_separator' => $userCountry->currency_decimal_separator ?? ',',
+            'decimal_digits' => (int) ($userCountry->currency_decimal_digits ?? 2),
+            'symbol_position' => $userCountry->currency_symbol_position ?? 'after',
+            'locale' => $userCountry->locale ?? 'es-VE',
+        ];
+
+        // 5. Países disponibles
+        $availableCountries = Country::where('is_active', true)
+            ->select('name', 'iso2')
+            ->get();
 
         return [
             ...parent::share($request),
-            /* 'auth' => [
-                'user' => $request->user(),
-            ], */
 
             'auth' => [
                 'user' => Auth::user() ? [
@@ -54,13 +80,14 @@ class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
 
+            'appName' => $settings->site_name,
 
-            'appName' => $siteName,
-            'globalConfig' => app(CountryService::class)->getCountryConfig($request),
-
+            'userConfig' => $userConfig,
+            'availableCountries' => $availableCountries,
+            // 'globalConfig' => app(CountryService::class)->getCountryConfig($request), // 👈 Eliminado
 
             'system' => [
-                'site_name' => $siteName,
+                'site_name' => $settings->site_name,
                 'logo_url' => $settings->logo_path ? asset('storage/' . $settings->logo_path) : null,
                 'favicon_url' => $settings->favicon_path ? asset('storage/' . $settings->favicon_path) : null,
                 'base_currency_code' => $settings->base_currency_code,
