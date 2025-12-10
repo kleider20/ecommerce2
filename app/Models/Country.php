@@ -33,11 +33,16 @@ class Country extends Model
         'currency_symbol',
         'currency_format',
         'exchange_rate_to_usd',
+        'exchange_rate_from_api',
         'tax_rate',
         'tax_included_in_price',
         'timezone',
         'is_active',
-        'exchange_rate_from_api',
+        // 👇 Campos de formato de moneda (¡ESPECÍFICOS DE TU TABLA!)
+        'currency_thousand_separator',
+        'currency_decimal_separator',
+        'currency_decimal_digits',
+        'currency_symbol_position',
     ];
 
     /**
@@ -49,6 +54,8 @@ class Country extends Model
         'tax_rate' => 'decimal:2',
         'tax_included_in_price' => 'boolean',
         'is_active' => 'boolean',
+        // 👇 Cast explícito para dígitos decimales
+        'currency_decimal_digits' => 'integer',
     ];
 
     /**
@@ -57,7 +64,7 @@ class Country extends Model
     public function toFrontendArray(): array
     {
         return [
-            'country_code' => $this->iso2,
+            'country_iso2' => $this->iso2,
             'country_name' => $this->name,
             'currency_code' => $this->currency_code,
             'currency_symbol' => $this->currency_symbol,
@@ -67,6 +74,11 @@ class Country extends Model
             'timezone' => $this->timezone,
             'language' => $this->language_code,
             'flag_url' => $this->flag_url,
+            'thousand_separator' => $this->currency_thousand_separator ?? ',',
+            'decimal_separator' => $this->currency_decimal_separator ?? '.',
+            'decimal_digits' => $this->currency_decimal_digits ?? 2,
+            'symbol_position' => $this->currency_symbol_position ?? 'before',
+            'exchange_rate_to_usd' => (float) $this->exchange_rate_to_usd,
         ];
     }
 
