@@ -185,16 +185,25 @@ export default ProductCard;
 import React from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
 import {
-  ShoppingCart,
+  Eye,
   AlertCircle,
   Star,
   Heart,
   Truck,
+  BadgeCheck,
+  Clock,
   Package,
-  Clock
+  MapPin,
+  ShieldCheck
 } from 'lucide-react';
 
-const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFavorite = false }) => {
+const ProductCard = ({
+  product,
+  userConfig,
+  onViewDetails,
+  onToggleFavorite,
+  isFavorite = false
+}) => {
   if (!userConfig) {
     return (
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 flex flex-col h-full">
@@ -214,7 +223,6 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
     );
   }
 
-  // ✅ Conversión correcta: USD → moneda local
   const exchangeRate = userConfig.exchange_rate_to_usd || 1;
   const priceInLocal = product.price_usd * exchangeRate;
   const originalPriceInLocal = product.original_price_usd
@@ -228,18 +236,18 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
 
   const showLowStock = product.in_stock && product.stock <= 5 && product.stock > 0;
   const hasReviews = product.rating && product.review_count > 0;
+  const safeRating = product.rating ? parseFloat(product.rating) : 0;
 
-  // ✅ Determinar badge (usar .name si es objeto)
+  const categoryName = product.category && typeof product.category === 'object'
+    ? product.category.name
+    : product.category;
+
   let badge = null;
   if (product.is_bestseller) {
     badge = { text: 'Más vendido', color: 'bg-orange-100 text-orange-800', icon: Package };
   } else if (product.is_new) {
     badge = { text: 'Nuevo', color: 'bg-green-100 text-green-800', icon: Clock };
-  } else if (product.category) {
-    // ✅ Corrección clave: usar .name si category es objeto
-    const categoryName = typeof product.category === 'object'
-      ? product.category.name
-      : product.category;
+  } else if (categoryName) {
     badge = { text: categoryName, color: 'bg-blue-100 text-blue-800' };
   }
 
@@ -257,14 +265,13 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
           />
         </div>
 
-        {/* Favorite button */}
         <button
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             if (onToggleFavorite) onToggleFavorite(product.id);
           }}
-          className="absolute top-3 right-3 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-all duration-200 hover:scale-110"
+          className="absolute top-3 right-3 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-all duration-200 hover:scale-110 z-10"
           aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
         >
           <Heart
@@ -273,24 +280,21 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
           />
         </button>
 
-        {/* Agotado */}
         {!product.in_stock && (
-          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg z-10">
             <AlertCircle size={12} />
             AGOTADO
           </div>
         )}
 
-        {/* Descuento */}
         {hasDiscount && (
-          <div className="absolute top-10 left-3 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
+          <div className="absolute top-10 left-3 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg z-10">
             -{discountPercentage}%
           </div>
         )}
 
-        {/* Bestseller / Nuevo / Categoría */}
         {badge && !hasDiscount && product.in_stock && (
-          <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-md border border-gray-200">
+          <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-md border border-gray-200 z-10">
             {badge.icon && <badge.icon size={12} className="text-current" />}
             {badge.text}
           </div>
@@ -298,14 +302,18 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
       </div>
 
       <div className="p-4 flex flex-col flex-grow">
-        {/* Categoría / Marca */}
         <div className="flex justify-between items-start mb-2">
-          {badge && badge.text && !product.is_bestseller && !product.is_new && (
+          {categoryName && !product.is_bestseller && !product.is_new && (
             <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-              {badge.text}
+              {categoryName}
             </span>
           )}
-
+          {(product.is_bestseller || product.is_new) && (
+            <span className={`text-xs ${badge?.color} px-2 py-1 rounded-full flex items-center gap-1`}>
+              {badge?.icon && <badge.icon size={12} />}
+              {badge?.text}
+            </span>
+          )}
           {product.brand && (
             <span className="text-xs text-gray-500 font-medium">
               {product.brand}
@@ -313,12 +321,11 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
           )}
         </div>
 
-        {/* Nombre */}
+        {/* 👇 Nombre con altura fija y truncado */}
         <h3 className="font-semibold text-gray-900 text-sm mb-2 line-clamp-2 leading-tight min-h-[44px]">
           {product.name}
         </h3>
 
-        {/* Reseñas */}
         {hasReviews && (
           <div className="flex items-center gap-1 mb-2 text-xs text-gray-600">
             <div className="flex">
@@ -327,19 +334,18 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
                   key={i}
                   size={14}
                   className={`${
-                    i < Math.floor(product.rating)
+                    i < Math.floor(safeRating)
                       ? 'fill-yellow-400 text-yellow-400'
                       : 'text-gray-300'
                   }`}
                 />
               ))}
             </div>
-            <span className="font-medium text-gray-900">{product.rating.toFixed(1)}</span>
+            <span className="font-medium text-gray-900">{safeRating.toFixed(1)}</span>
             <span>({product.review_count})</span>
           </div>
         )}
 
-        {/* Stock bajo */}
         {showLowStock && (
           <div className="flex items-center gap-1 mb-2">
             <AlertCircle size={14} className="text-orange-500 flex-shrink-0" />
@@ -349,9 +355,8 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
           </div>
         )}
 
-        {/* Envío gratis */}
         {product.free_shipping && (
-          <div className="flex items-center gap-1 mb-3">
+          <div className="flex items-center gap-1 mb-2">
             <Truck size={14} className="text-green-600 flex-shrink-0" />
             <p className="text-xs text-green-700 font-medium">
               Envío gratis
@@ -359,7 +364,15 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
           </div>
         )}
 
-        {/* Precio */}
+        {product.warranty && (
+          <div className="flex items-center gap-1 mb-3">
+            <ShieldCheck size={14} className="text-blue-600 flex-shrink-0" />
+            <p className="text-xs text-blue-700 font-medium">
+              {product.warranty}
+            </p>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-3 mt-auto">
           <div className="flex items-center flex-wrap gap-1">
             <span className="text-base font-bold text-gray-900">
@@ -370,28 +383,25 @@ const ProductCard = ({ product, userConfig, onAddToCart, onToggleFavorite, isFav
                 {formatCurrency(originalPriceInLocal, userConfig)}
               </span>
             )}
+            {product.price_per_unit && (
+              <span className="text-xs text-gray-500 ml-1">
+                {product.price_per_unit}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Botón "Agregar" */}
-        <button
-          onClick={() => onAddToCart && onAddToCart(product)}
-          disabled={!product.in_stock}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
-            product.in_stock
-              ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md active:scale-[0.98]'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-          }`}
-        >
-          {product.in_stock ? (
-            <>
-              <ShoppingCart size={16} />
-              Agregar
-            </>
-          ) : (
-            'No disponible'
-          )}
-        </button>
+        {/* 👇 Botón "Ver detalles" con estilo uniforme */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => onViewDetails && onViewDetails(product)}
+            className="flex-1 py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-900 text-white shadow-sm hover:shadow-md active:scale-[0.98]"
+            aria-label={`Ver detalles de ${product.name}`}
+          >
+            <Eye size={16} />
+            Ver detalles
+          </button>
+        </div>
       </div>
     </div>
   );

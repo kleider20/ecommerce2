@@ -6,53 +6,67 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
+    use HasFactory;
+
+    /**
+     * Los atributos que son asignables masivamente.
+     */
     protected $fillable = [
         'user_id',
         'name',
         'description',
-        'category',
+        'category_id',
         'price_usd',
         'original_price_usd',
         'stock',
         'in_stock',
         'image_url',
         'is_active',
-    ];
-
-    protected $casts = [
-        'price_usd' => 'float',
-        'original_price_usd' => 'float',
-        'in_stock' => 'boolean',
-        'is_active' => 'boolean',
+        'brand',
+        'is_bestseller',
+        'is_new',
+        'rating',
+        'review_count',
+        'free_shipping',
+        'warranty',
+        'price_per_unit',
+        'sku',
+        'short_description',
     ];
 
     /**
-     * Relación: un producto pertenece a un usuario (proveedor)
+     * Los atributos que deben convertirse a tipos nativos.
+     */
+    protected $casts = [
+        'price_usd' => 'decimal:2',
+        'original_price_usd' => 'decimal:2',
+        'stock' => 'integer',
+        'in_stock' => 'boolean',
+        'is_active' => 'boolean',
+        'is_bestseller' => 'boolean',
+        'is_new' => 'boolean',
+        'rating' => 'decimal:2',
+        'review_count' => 'integer',
+        'free_shipping' => 'boolean',
+    ];
+
+    /**
+     * Relación: un producto pertenece a un proveedor (usuario).
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
-     * Formatea el precio en la moneda del país actual
+     * Relación: un producto pertenece a una categoría.
      */
-    public function formatPrice($country)
+    public function category(): BelongsTo
     {
-        if ($country->exchange_rate_to_usd <= 0) {
-            return $this->price_usd;
-        }
-
-        $priceInLocalCurrency = $this->price_usd / $country->exchange_rate_to_usd;
-        return number_format($priceInLocalCurrency, 2, ',', '.');
-    }
-
-    // Relación: un producto pertenece a una categoría
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }
