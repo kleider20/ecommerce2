@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->boolean('in_stock')->default(false);
             $table->string('image_url')->nullable();      // Ruta a la imagen (ej: /storage/products/1.jpg)
+            $table->json('gallery_urls')->nullable();
             $table->boolean('is_active')->default(true);  // ¿Visible en tienda?
 
             // 👇 Campos para el ProductCard

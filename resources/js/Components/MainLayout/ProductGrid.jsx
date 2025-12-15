@@ -1,5 +1,5 @@
 import React from 'react';
-import ProductCard from '@/Components/MainLayout/ProductCard';
+import ProductCard from '@/Components/Custom/ProductCard';
 
 const ProductGrid = ({ products, selectedCategory, categories, onClearFilters, userConfig, searchTerm = '' }) => {
   if (products.length === 0) {

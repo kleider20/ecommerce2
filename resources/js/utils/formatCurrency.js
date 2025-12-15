@@ -1,4 +1,4 @@
-/* // utils/formatCurrency.js
+// utils/formatCurrency.js
 export const formatCurrency = (amount, userConfig) => {
   if (amount == null || !userConfig) {
     return '0';
@@ -36,53 +36,53 @@ export const formatCurrency = (amount, userConfig) => {
   }
   return `${symbol} ${numberPart}`.trim();
 };
- */
 
-// utils/formatCurrency.js
-export const formatCurrency = (amount, config) => {
-  if (amount == null || !config) {
-    return '0';
-  }
 
-  // Obtener valores desde la configuración (de la tabla `countries`)
-  const digits = config.currency_decimal_digits != null
-    ? config.currency_decimal_digits
-    : 2;
+// // utils/formatCurrency.js
+// export const formatCurrency = (amount, config) => {
+//   if (amount == null || !config) {
+//     return '0';
+//   }
 
-  const thousandSep = config.currency_thousand_separator || '.';
-  const decimalSep = config.currency_decimal_separator || ',';
-  const symbol = config.currency_symbol || '';
-  const position = config.currency_symbol_position || 'before';
+//   // Obtener valores desde la configuración (de la tabla `countries`)
+//   const digits = config.currency_decimal_digits != null
+//     ? config.currency_decimal_digits
+//     : 2;
 
-  // Asegurar que amount sea número
-  const num = typeof amount === 'number' ? amount : parseFloat(amount);
-  if (isNaN(num)) return '0';
+//   const thousandSep = config.currency_thousand_separator || '.';
+//   const decimalSep = config.currency_decimal_separator || ',';
+//   const symbol = config.currency_symbol || '';
+//   const position = config.currency_symbol_position || 'before';
 
-  // Redondear
-  const rounded = num.toFixed(digits);
-  let [integer, decimal] = rounded.split('.');
+//   // Asegurar que amount sea número
+//   const num = typeof amount === 'number' ? amount : parseFloat(amount);
+//   if (isNaN(num)) return '0';
 
-  // Formatear miles: insertar `thousandSep` cada 3 dígitos desde la derecha
-  if (thousandSep && integer?.length > 3) {
-    // Convertir a array, invertir, agrupar, volver a invertir
-    integer = integer
-      .split('')
-      .reverse()
-      .join('')
-      .replace(/(\d{3})(?=\d)/g, `$1${thousandSep}`)
-      .split('')
-      .reverse()
-      .join('');
-  }
+//   // Redondear
+//   const rounded = num.toFixed(digits);
+//   let [integer, decimal] = rounded.split('.');
 
-  // Combinar partes
-  const numberPart = digits > 0 && decimal
-    ? `${integer}${decimalSep}${decimal}`
-    : integer;
+//   // Formatear miles: insertar `thousandSep` cada 3 dígitos desde la derecha
+//   if (thousandSep && integer?.length > 3) {
+//     // Convertir a array, invertir, agrupar, volver a invertir
+//     integer = integer
+//       .split('')
+//       .reverse()
+//       .join('')
+//       .replace(/(\d{3})(?=\d)/g, `$1${thousandSep}`)
+//       .split('')
+//       .reverse()
+//       .join('');
+//   }
 
-  // Posicionar símbolo
-  if (position === 'after') {
-    return `${numberPart} ${symbol}`.trim();
-  }
-  return `${symbol} ${numberPart}`.trim();
-};
+//   // Combinar partes
+//   const numberPart = digits > 0 && decimal
+//     ? `${integer}${decimalSep}${decimal}`
+//     : integer;
+
+//   // Posicionar símbolo
+//   if (position === 'after') {
+//     return `${numberPart} ${symbol}`.trim();
+//   }
+//   return `${symbol} ${numberPart}`.trim();
+// };

@@ -12,9 +12,6 @@ class Product extends Model
 {
     use HasFactory;
 
-    /**
-     * Los atributos que son asignables masivamente.
-     */
     protected $fillable = [
         'user_id',
         'name',
@@ -24,7 +21,8 @@ class Product extends Model
         'original_price_usd',
         'stock',
         'in_stock',
-        'image_url',
+        'image_url',          // 👈 Imagen principal
+        'gallery_urls',       // 👈 Nueva columna para la galería (JSON)
         'is_active',
         'brand',
         'is_bestseller',
@@ -38,9 +36,6 @@ class Product extends Model
         'short_description',
     ];
 
-    /**
-     * Los atributos que deben convertirse a tipos nativos.
-     */
     protected $casts = [
         'price_usd' => 'decimal:2',
         'original_price_usd' => 'decimal:2',
@@ -52,19 +47,14 @@ class Product extends Model
         'rating' => 'decimal:2',
         'review_count' => 'integer',
         'free_shipping' => 'boolean',
+        'gallery_urls' => 'array', // 👈 Cast a array para JSON
     ];
 
-    /**
-     * Relación: un producto pertenece a un proveedor (usuario).
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Relación: un producto pertenece a una categoría.
-     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');

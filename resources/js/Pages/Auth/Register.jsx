@@ -1,120 +1,118 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+// resources/js/Pages/Auth/Register.jsx
+import React, { useState } from 'react';
+import RegistrationLayout from '@/Layouts/RegistrationLayout';
+import RoleSelectionStep from '@/Components/Registration/RoleSelectionStep';
+import BaseUserFormStep from '@/Components/Registration/BaseUserFormStep';
+import RoleSpecificFormStep from '@/Components/Registration/RoleSpecificFormStep';
+import { router } from '@inertiajs/react';
 
-export default function Register() {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
+const Register = ({ roles }) => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedRole, setSelectedRole] = useState('');
+  const [formData, setFormData] = useState({
+    // Base user fields
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+    // Role-specific fields (inicializa según tus necesidades)
+    phone: '',
+    address: '',
+    date_of_birth: '',
+    company_name: '',
+    company_ruc: '',
+    // ... otros campos
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    router.post(route('register'), {
+      ...formData,
+      role: selectedRole
     });
+  };
 
-    const submit = (e) => {
-        e.preventDefault();
+  return (
+    <RegistrationLayout currentStep={currentStep} totalSteps={3}>
+      {currentStep === 1 && (
+        <RoleSelectionStep
+          roles={roles.map(role => ({
+            id: role.name,
+            name: role.name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            description: `Selecciona el rol de ${role.name}`,
+            icon: getRoleIcon(role.name), // Función auxiliar (opcional)
+            color: getRoleColor(role.name) // Función auxiliar (opcional)
+          }))}
+          selectedRole={selectedRole}
+          onRoleSelect={setSelectedRole}
+          onNext={() => selectedRole && setCurrentStep(2)}
+        />
+      )}
 
-        post(route('register'), {
-            onFinish: () => reset('password', 'password_confirmation'),
-        });
-    };
+      {currentStep === 2 && (
+        <BaseUserFormStep
+          formData={formData}
+          onInputChange={handleInputChange}
+          onBack={() => setCurrentStep(1)}
+          onNext={() => setCurrentStep(3)}
+        />
+      )}
 
-    return (
-        <GuestLayout>
-            <Head title="Register" />
+      {currentStep === 3 && (
+        <RoleSpecificFormStep
+          selectedRole={selectedRole}
+          roles={roles.map(role => ({ id: role.name, name: role.name }))}
+          formData={formData}
+          onInputChange={handleInputChange}
+          onBack={() => setCurrentStep(2)}
+          onSubmit={handleSubmit}
+        />
+      )}
+    </RegistrationLayout>
+  );
+};
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
+// ✅ Funciones auxiliares para iconos y colores (opcional pero recomendado)
+const getRoleIcon = (roleName) => {
+  const icons = {
+    user: User,
+    provider: Building,
+    seller: Store,
+    delivery: Truck,
+    shipping_agency: Package,
+    advertiser: Globe,
+  };
+  return icons[roleName] || User;
+};
 
-                    <TextInput
-                        id="name"
-                        name="name"
-                        value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                    />
+const getRoleColor = (roleName) => {
+  const colors = {
+    user: 'bg-blue-100 text-blue-600',
+    provider: 'bg-green-100 text-green-600',
+    seller: 'bg-purple-100 text-purple-600',
+    delivery: 'bg-orange-100 text-orange-600',
+    shipping_agency: 'bg-red-100 text-red-600',
+    advertiser: 'bg-indigo-100 text-indigo-600',
+  };
+  return colors[roleName] || 'bg-gray-100 text-gray-600';
+};
 
-                    <InputError message={errors.name} className="mt-2" />
-                </div>
+// Importa los iconos necesarios
+import {
+  User,
+  Building,
+  Store,
+  Truck,
+  Package,
+  Globe
+} from 'lucide-react';
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        required
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <Link
-                        href={route('login')}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Already registered?
-                    </Link>
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
-    );
-}
+export default Register;

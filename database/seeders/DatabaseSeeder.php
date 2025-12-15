@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             CountriesSeeder::class,
             CategorySeeder::class,
             GeneralSettingsSeeder::class,
+            RoleMetadataSeeder::class,
             ProductSeeder::class,
         ]);
     }

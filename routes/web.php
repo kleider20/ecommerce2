@@ -23,14 +23,18 @@ use Inertia\Inertia;
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard'); */
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
 
 require __DIR__.'/auth.php';
 require __DIR__.'/home.php';
 require __DIR__.'/dashboard.php';
 
 require __DIR__.'/superadmin.php';
+
+require __DIR__.'/product.php';
+require __DIR__.'/image.php';
+require __DIR__.'/roles.php';

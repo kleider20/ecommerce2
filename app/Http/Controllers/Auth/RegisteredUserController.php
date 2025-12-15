@@ -13,6 +13,8 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use Spatie\Permission\Models\Role;
+
 class RegisteredUserController extends Controller
 {
     /**
@@ -20,7 +22,15 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        // Obtener todos los roles (solo el nombre y el ID)
+        // $roles = Role::all(['id', 'name']);
+        $roles = Role::where('name', '!=', 'admin')
+             ->where('name', '!=', 'super_admin')
+             ->get(['id', 'name']);
+
+        return Inertia::render('Auth/Register', [
+            'roles' => $roles,
+        ]);
     }
 
     /**

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
+use App\Models\Category;
+
 class ProductController extends Controller
 {
     // public function __construct()
@@ -39,7 +41,51 @@ class ProductController extends Controller
 
     public function create()
     {
-        return Inertia::render('Products/ProductCreate');
+        $categories = Category::where('status', 'active')->get(['id', 'name']);
+
+        return Inertia::render('Products/ProductCreate',[
+
+            'categories' => $categories
+
+        ]);
+    }
+
+
+    // app/Http/Controllers/ProductController.php
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'main_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            // ... otras validaciones
+        ]);
+
+        $product = new Product($request->except('main_image', 'gallery_images'));
+        $product->save();
+
+        $providerId = $request->user()->id;
+        $productId = $product->id;
+        $basePath = "products/{$providerId}/{$productId}";
+
+        // Imagen principal
+        if ($request->hasFile('main_image')) {
+            $mainPath = $request->file('main_image')->store("public/{$basePath}");
+            $product->image_url = str_replace('public/', '', $mainPath);
+        }
+
+        // Galería
+        $galleryPaths = [];
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $image) {
+                $path = $image->store("public/{$basePath}/gallery");
+                $galleryPaths[] = str_replace('public/', '', $path);
+            }
+        }
+        $product->gallery_urls = $galleryPaths;
+        $product->save();
+
+        return response()->json(['success' => true]);
     }
 
     // /**

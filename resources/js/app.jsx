@@ -42,7 +42,7 @@ createInertiaApp({
                     pauseOnFocusLoss
                     draggable
                     pauseOnHover
-                    theme="light"
+                    theme="colored"
                 />
             </PrimeReactProvider>
         );
