@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('color')->default('bg-gray-100 text-gray-800');
             $table->string('icon')->default('Shield');
+            $table->json('registration_fields')->nullable(); // 👈 Campos específicos de registro
             $table->boolean('show_in_register')->default(false);
             $table->timestamps();
 

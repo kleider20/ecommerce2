@@ -6,22 +6,37 @@ import BaseUserFormStep from '@/Components/Registration/BaseUserFormStep';
 import RoleSpecificFormStep from '@/Components/Registration/RoleSpecificFormStep';
 import { router } from '@inertiajs/react';
 
+// Iconos
+import {
+  User, Building2, Store, Truck, Package, Globe, Shield
+} from 'lucide-react';
+
 const Register = ({ roles }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState('');
   const [formData, setFormData] = useState({
-    // Base user fields
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
-    // Role-specific fields (inicializa según tus necesidades)
     phone: '',
     address: '',
     date_of_birth: '',
     company_name: '',
     company_ruc: '',
-    // ... otros campos
+    company_address: '',
+    company_phone: '',
+    company_email: '',
+    company_website: '',
+    business_license: '',
+    company_description: '',
+    store_name: '',
+    store_category: '',
+    store_address: '',
+    store_phone: '',
+    store_email: '',
+    store_hours: '',
+    store_description: '',
   });
 
   const handleInputChange = (e) => {
@@ -40,17 +55,28 @@ const Register = ({ roles }) => {
     });
   };
 
+  // ✅ Mapeo basado en los valores de `role.icon` (no role.name)
+  const iconMap = {
+    User: User,
+    Building2: Building2,
+    Store: Store,
+    Truck: Truck,
+    Package: Package,
+    Globe: Globe,
+    Shield: Shield,
+  };
+
+  // ✅ Convierte el string `role.icon` en componente React
+  const rolesWithIcons = roles.map(role => ({
+    ...role,
+    iconComponent: iconMap[role.icon] || User, // ✅ Usa role.icon, no role.name
+  }));
+
   return (
     <RegistrationLayout currentStep={currentStep} totalSteps={3}>
       {currentStep === 1 && (
         <RoleSelectionStep
-          roles={roles.map(role => ({
-            id: role.name,
-            name: role.name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            description: `Selecciona el rol de ${role.name}`,
-            icon: getRoleIcon(role.name), // Función auxiliar (opcional)
-            color: getRoleColor(role.name) // Función auxiliar (opcional)
-          }))}
+          roles={rolesWithIcons}
           selectedRole={selectedRole}
           onRoleSelect={setSelectedRole}
           onNext={() => selectedRole && setCurrentStep(2)}
@@ -69,7 +95,7 @@ const Register = ({ roles }) => {
       {currentStep === 3 && (
         <RoleSpecificFormStep
           selectedRole={selectedRole}
-          roles={roles.map(role => ({ id: role.name, name: role.name }))}
+          roles={rolesWithIcons}
           formData={formData}
           onInputChange={handleInputChange}
           onBack={() => setCurrentStep(2)}
@@ -79,40 +105,5 @@ const Register = ({ roles }) => {
     </RegistrationLayout>
   );
 };
-
-// ✅ Funciones auxiliares para iconos y colores (opcional pero recomendado)
-const getRoleIcon = (roleName) => {
-  const icons = {
-    user: User,
-    provider: Building,
-    seller: Store,
-    delivery: Truck,
-    shipping_agency: Package,
-    advertiser: Globe,
-  };
-  return icons[roleName] || User;
-};
-
-const getRoleColor = (roleName) => {
-  const colors = {
-    user: 'bg-blue-100 text-blue-600',
-    provider: 'bg-green-100 text-green-600',
-    seller: 'bg-purple-100 text-purple-600',
-    delivery: 'bg-orange-100 text-orange-600',
-    shipping_agency: 'bg-red-100 text-red-600',
-    advertiser: 'bg-indigo-100 text-indigo-600',
-  };
-  return colors[roleName] || 'bg-gray-100 text-gray-600';
-};
-
-// Importa los iconos necesarios
-import {
-  User,
-  Building,
-  Store,
-  Truck,
-  Package,
-  Globe
-} from 'lucide-react';
 
 export default Register;

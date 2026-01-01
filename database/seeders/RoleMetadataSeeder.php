@@ -31,12 +31,19 @@ class RoleMetadataSeeder extends Seeder
                 'icon' => 'Crown',
                 'show_in_register' => false,
             ],
-            'comprador' => [
-                'display_name' => 'Comprador',
-                'description' => 'Compra productos en la plataforma',
-                'color' => 'bg-blue-100 text-blue-800',
+            'user' => [
+                'display_name' => 'Usuario Regular',
+                'description' => 'Acceso básico para compras',
+                'color' => 'bg-gray-100 text-gray-800',
                 'icon' => 'User',
+                'show_in_register' => true,
             ],
+            // 'comprador' => [
+            //     'display_name' => 'Comprador',
+            //     'description' => 'Compra productos en la plataforma',
+            //     'color' => 'bg-blue-100 text-blue-800',
+            //     'icon' => 'User',
+            // ],
             'proveedor' => [
                 'display_name' => 'Proveedor',
                 'description' => 'Registra y vende sus productos',
@@ -49,12 +56,12 @@ class RoleMetadataSeeder extends Seeder
                 'color' => 'bg-purple-100 text-purple-800',
                 'icon' => 'Building2',
             ],
-            'anunciante' => [
-                'display_name' => 'Anunciante',
-                'description' => 'Realiza entregas y gana por servicio',
-                'color' => 'bg-orange-100 text-orange-800',
-                'icon' => 'Bike',
-            ],
+            // 'anunciante' => [
+            //     'display_name' => 'Anunciante',
+            //     'description' => 'Realiza entregas y gana por servicio',
+            //     'color' => 'bg-orange-100 text-orange-800',
+            //     'icon' => 'Bike',
+            // ],
             // 'delivery' => [
             //     'display_name' => 'Repartidor',
             //     'description' => 'Realiza entregas y gana por servicio',

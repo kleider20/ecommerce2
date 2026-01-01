@@ -422,7 +422,7 @@ const menuItemsConfig = [
     label: 'Roles y Permisos',
     icon: UserRoundCog,
     routeName: 'roles.index', // 👈 Nombre de la ruta, no la URL
-    permission: null
+    permission: 'manage_roles_permissions',
   },
 //   {
 //     id: 'roles',
@@ -443,8 +443,11 @@ const menuItemsConfig = [
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const { props } = usePage();
-  const user = props.auth?.user;
+
+    const { props } = usePage();
+    const user = props.auth?.user;
+
+    console.log('User data:', user);
 
   if (!user) return null;
 

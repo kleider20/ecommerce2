@@ -14,76 +14,153 @@ class RolePermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // 1. Crear roles
-        $roles = ['super_admin', 'admin', 'proveedor', 'vendedor', 'comprador', 'anunciante'];
+        $roles = ['super_admin', 'admin', 'proveedor', 'vendedor', 'user'];
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role]);
         }
 
-        // 2. Crear permisos estándar
-        $permissions = [
-            'view products', 'create products', 'edit own products', 'delete own products',
-            'view own products', 'view all products', 'create orders', 'view own orders',
-            'view all orders', 'update order status', 'view own earnings', 'view platform revenue',
-            'assign roles', 'view user list', 'manage global config', 'manage countries',
-            'create ads', 'view own ads', 'edit own ads'
+        // 2. Definir permisos POR ROL
+        $rolePermissions = [
+            'admin' => [
+                'normal' => [
+                    ['name' => 'view_products', 'display_name' => 'Ver Productos', 'description' => 'Acceso a la lista de productos', 'category' => 'products'],
+                    ['name' => 'create_products', 'display_name' => 'Crear Productos', 'description' => 'Acceso a la creación de productos', 'category' => 'products'],
+                    ['name' => 'view_users', 'display_name' => 'Ver Usuarios', 'description' => 'Acceso a la lista de usuarios', 'category' => 'users'],
+                ],
+                'critical' => [
+                    ['name' => 'manage_accounts', 'display_name' => 'Gestor de Cuentas', 'description' => 'Gestor de cuentas de usuarios', 'category' => 'system'],
+                ]
+            ],
+            //Permisos de Usuarios
+            'user' => [
+                'normal' => [
+                    ['name' => 'view_products', 'display_name' => 'Ver Productos', 'description' => 'Acceso a la lista de productos', 'category' => 'products'],
+                    ['name' => 'view_profile', 'display_name' => 'Ver Perfil', 'description' => 'Acceso al perfil', 'category' => 'users'],
+                ],
+                'critical' => [
+                    ['name' => 'view_dashboard', 'display_name' => 'Dashboard', 'description' => 'Acceso al Dashboard', 'category' => 'system'],
+                ]
+            ],
+
+            'proveedor' => [
+                'normal' => [
+                    ['name' => 'view_own_products', 'display_name' => 'Ver Mis Productos', 'description' => 'Ver solo sus productos', 'category' => 'products'],
+                    ['name' => 'create_products', 'display_name' => 'Crear Productos', 'description' => 'Crear nuevos productos', 'category' => 'products'],
+                ],
+                'critical' => [
+                    ['name' => 'manage_own_catalog', 'display_name' => 'Gestionar Catálogo', 'description' => 'Administrar su catálogo completo', 'category' => 'products'],
+                ]
+            ],
+            'vendedor' => [
+                'normal' => [
+                    ['name' => 'view_products', 'display_name' => 'Ver Productos', 'description' => 'Ver catálogo público', 'category' => 'products'],
+                    ['name' => 'create_orders', 'display_name' => 'Crear Pedidos', 'description' => 'Realizar ventas', 'category' => 'orders'],
+                ],
+                'critical' => [
+                    ['name' => 'view_own_earnings', 'display_name' => 'Ver Ganancias', 'description' => 'Acceso a comisiones', 'category' => 'finance'],
+                ]
+            ],
+            // 'comprador' => [
+            //     'normal' => [
+            //         ['name' => 'view_products', 'display_name' => 'Ver Productos', 'description' => 'Navegar catálogo', 'category' => 'products'],
+            //         ['name' => 'create_orders', 'display_name' => 'Comprar Productos', 'description' => 'Realizar compras', 'category' => 'orders'],
+            //     ],
+            //     'critical' => []
+            // ],
+            // 'anunciante' => [
+            //     'normal' => [
+            //         ['name' => 'create_ads', 'display_name' => 'Crear Anuncios', 'description' => 'Diseñar campañas', 'category' => 'marketing'],
+            //         ['name' => 'view_own_ads', 'display_name' => 'Ver Mis Anuncios', 'description' => 'Monitorear campañas', 'category' => 'marketing'],
+            //     ],
+            //     'critical' => [
+            //         ['name' => 'manage_ad_budget', 'display_name' => 'Gestionar Presupuesto', 'description' => 'Ajustar inversión publicitaria', 'category' => 'finance'],
+            //     ]
+            // ]
         ];
 
-        foreach ($permissions as $name) {
-            Permission::firstOrCreate(['name' => $name]);
-        }
-
-        // 3. Crear permisos CRÍTICOS
-        $criticalPermissions = [
-            'view_dashboard' => 'Acceso al panel de control',
-            'manage_roles' => 'Gestionar Roles',
-            'manage_permissions' => 'Gestionar Permisos',
-            'manage_users' => 'Gestionar Usuarios'
+        // 3. Definir PERMISOS COMPARTIDOS (asignados a varios roles específicos)
+        $sharedPermissions = [
+            'view_profile' => ['admin', 'proveedor', 'vendedor', 'user'],
+            'view_dashboard' => ['admin', 'proveedor', 'vendedor', 'user'],
+            // 'edit_profile' => ['admin', 'proveedor', 'vendedor', 'comprador', 'anunciante', 'user'],
         ];
 
-        foreach ($criticalPermissions as $name => $desc) {
-            $perm = Permission::firstOrCreate(['name' => $name]);
-            PermissionMetadata::create([
-                'permission_id' => $perm->id,
-                'display_name' => ucfirst(str_replace('_', ' ', $name)),
-                'description' => $desc,
-                'is_critical' => true,
-                'category' => 'system'
-            ]);
+        // 4. Definir PERMISOS GLOBALES (solo para super_admin)
+        $globalPermissions = [
+            ['name' => 'manage_roles_permissions', 'display_name' => 'Gestionar Roles y Permisos', 'description' => 'Crear, Modificar, Administrar roles y permisos del sistema', 'category' => 'system'],
+            // ['name' => 'view_all_revenue', 'display_name' => 'Ver Ingresos Totales', 'description' => 'Acceso a reportes financieros globales', 'category' => 'finance'],
+            ['name' => 'manage_global_config', 'display_name' => 'Configuración Global', 'description' => 'Ajustar parámetros del sitio', 'category' => 'system'],
+        ];
+
+        // 5. Crear todos los permisos y metadatos
+        $allPermissionNames = [];
+
+        // 5.1 Permisos por rol
+        foreach ($rolePermissions as $roleName => $perms) {
+            foreach (array_merge($perms['normal'], $perms['critical']) as $permData) {
+                $perm = Permission::firstOrCreate(['name' => $permData['name']]);
+                $allPermissionNames[] = $permData['name'];
+
+                PermissionMetadata::updateOrCreate(
+                    ['permission_id' => $perm->id],
+                    [
+                        'display_name' => $permData['display_name'],
+                        'description' => $permData['description'],
+                        'category' => $permData['category'],
+                        'is_critical' => in_array($permData, $perms['critical']),
+                    ]
+                );
+            }
         }
 
-        // 4. Asignar permisos a roles (¡CORREGIDO!)
+        // 5.2 Permisos globales
+        foreach ($globalPermissions as $permData) {
+            $perm = Permission::firstOrCreate(['name' => $permData['name']]);
+            $allPermissionNames[] = $permData['name'];
 
-        // Super Admin: TODOS los permisos
-        Role::findByName('super_admin')->syncPermissions(Permission::all()->pluck('name'));
+            PermissionMetadata::updateOrCreate(
+                ['permission_id' => $perm->id],
+                [
+                    'display_name' => $permData['display_name'],
+                    'description' => $permData['description'],
+                    'category' => $permData['category'],
+                    'is_critical' => true,
+                ]
+            );
+        }
 
-        // Admin: Todos los permisos EXCEPTO los críticos del Super Admin
-        $adminPermissions = Permission::whereNotIn('name', [
-            'manage_roles',        // Solo Super Admin gestiona roles
-            'manage_permissions'   // Solo Super Admin gestiona permisos
-        ])->pluck('name');
-        Role::findByName('admin')->syncPermissions($adminPermissions);
+        // 6. Asignar permisos a roles específicos
+        foreach ($rolePermissions as $roleName => $perms) {
+            $role = Role::findByName($roleName);
+            $rolePermissionNames = array_column(array_merge($perms['normal'], $perms['critical']), 'name');
+            $role->syncPermissions($rolePermissionNames);
+        }
 
-        // Proveedor
-        Role::findByName('proveedor')->syncPermissions([
-            'view products', 'create products', 'edit own products', 'delete own products',
-            'view own products', 'view own orders', 'view own earnings'
-        ]);
+        // 7. Asignar PERMISOS COMPARTIDOS (si los defines)
+        foreach ($sharedPermissions as $permName => $rolesToAssign) {
+            $perm = Permission::firstOrCreate(['name' => $permName]);
+            $allPermissionNames[] = $permName;
 
-        // Vendedor
-        Role::findByName('vendedor')->syncPermissions([
-            'view products', 'create orders', 'view own orders', 'update order status', 'view own earnings'
-        ]);
+            PermissionMetadata::updateOrCreate(
+                ['permission_id' => $perm->id],
+                [
+                    'display_name' => ucfirst(str_replace('_', ' ', $permName)),
+                    'description' => "Permiso compartido: $permName",
+                    'category' => 'shared',
+                    'is_critical' => false,
+                ]
+            );
 
-        // Comprador
-        Role::findByName('comprador')->syncPermissions([
-            'view products', 'create orders', 'view own orders'
-        ]);
+            foreach ($rolesToAssign as $roleName) {
+                $role = Role::findByName($roleName);
+                if (!$role->hasPermissionTo($permName)) {
+                    $role->givePermissionTo($perm);
+                }
+            }
+        }
 
-        // Anunciante
-        Role::findByName('anunciante')->syncPermissions([
-            'create ads', 'view own ads', 'edit own ads'
-        ]);
-
-        $this->command->info('✅ Roles y permisos asignados correctamente.');
+        // 8. Asignar TODOS los permisos al super_admin
+        $superAdmin = Role::findByName('super_admin');
+        $superAdmin->syncPermissions(array_unique($allPermissionNames));
     }
 }

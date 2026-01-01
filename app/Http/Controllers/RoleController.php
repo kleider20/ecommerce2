@@ -8,24 +8,28 @@ use App\Models\Role;
 use Inertia\Inertia;
 use App\Models\Permission;
 use App\Models\RoleMetadata;
+use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
    public function index()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
-        if (!$user->hasRole(['super_admin', 'admin'])) {
-            abort(403);
+        // ✅ Verificar si el usuario tiene el permiso requerido
+        if (!$user->hasPermissionTo('manage_roles_permissions')) {
+            // 👇 Renderizar la página de error 403 personalizada de Inertia
+            return Inertia::render('Errors/403');
         }
 
+        // ✅ Cargar roles (excluir super_admin si es admin)
         $roles = Role::with('metadata')->get();
         if ($user->hasRole('admin')) {
             $roles = $roles->reject(fn($role) => $role->name === 'super_admin');
         }
 
-        // ✅ Carga metadata Y roles para los permisos
-        $permissions = Permission::all();
+        // ✅ Cargar permisos
+        $permissions = Permission::with('metadata')->get();
 
         return Inertia::render('Roles/RolesIndex', [
             'roles' => $roles,

@@ -91,7 +91,7 @@ class HandleInertiaRequests extends Middleware
                     'id' => Auth::id(),
                     'name' => Auth::user()->name,
                     'roles' => Auth::user()->getRoleNames()->toArray(),
-                    'permissions' => Auth::user()->getPermissionNames()->toArray(),
+                    'permissions' => Auth::user()->getAllPermissions()->pluck('name')->toArray(),
                 ] : null,
             ],
 

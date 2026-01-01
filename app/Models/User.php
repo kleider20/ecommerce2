@@ -50,8 +50,24 @@ class User extends Authenticatable
         ];
     }
 
+    // Relaciones
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    public function providerProfile()
+    {
+        return $this->hasOne(ProviderProfile::class);
+    }
+
+    public function sellerProfile()
+    {
+        return $this->hasOne(SellerProfile::class);
     }
 }
