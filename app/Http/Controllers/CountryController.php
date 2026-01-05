@@ -31,6 +31,21 @@ class CountryController extends Controller
         return redirect()->back();
     } */
 
+    public function index()
+    {
+        return Country::where('is_active', true)
+            ->select('id', 'name', 'iso2')
+            ->get();
+    }
+
+    public function states($countryId)
+    {
+        return Country::findOrFail($countryId)
+            ->states()
+            ->select('id', 'name')
+            ->get();
+    }
+
     public function setCountry(Request $request)
     {
         $request->validate([

@@ -97,4 +97,9 @@ class Country extends Model
     {
         return self::active()->where('iso2', strtoupper($iso2))->first();
     }
+
+    public function states()
+    {
+        return $this->hasMany(State::class);
+    }
 }

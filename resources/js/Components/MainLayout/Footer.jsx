@@ -1,6 +1,7 @@
 // resources/js/Components/Footer.jsx
 import React from 'react';
 import { ShoppingCart } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 
 const Footer = () => {
   return (
@@ -16,6 +17,20 @@ const Footer = () => {
           </p>
           <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
             <p>&copy; 2025 TechStore. Todos los derechos reservados. Creado por <strong>Kleider Rosamilia</strong></p>
+            <div className="mt-2 space-x-4">
+        <Link
+          href="/terms"
+          className="text-gray-300 hover:text-white text-sm"
+        >
+          Términos de Servicio
+        </Link>
+        <Link
+          href="/privacy"
+          className="text-gray-300 hover:text-white text-sm"
+        >
+          Política de Privacidad
+        </Link>
+      </div>
           </div>
         </div>
       </div>

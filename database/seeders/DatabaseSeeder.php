@@ -29,6 +29,8 @@ class DatabaseSeeder extends Seeder
             GeneralSettingsSeeder::class,
             RoleMetadataSeeder::class,
             ProductSeeder::class,
+            OrderNotificationSeeder::class,
+            VenezuelaStatesSeeder::class,
         ]);
     }
 }

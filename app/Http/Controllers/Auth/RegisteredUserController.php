@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Profile;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -52,6 +51,7 @@ class RegisteredUserController extends Controller
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|string', // 👈 Dinámico: cualquier string
+            'terms_accepted' => 'required|accepted',
         ]);
 
         // ✅ Validar que el rol existe y está habilitado para registro
@@ -92,7 +92,7 @@ class RegisteredUserController extends Controller
         $user->assignRole($request->role);
 
         // 3. Crear perfil base (común a todos)
-        $user->profile()->create($request->only([
+        $user->userProfile()->create($request->only([
             'phone', 'address', 'date_of_birth'
         ]));
 
@@ -110,21 +110,21 @@ class RegisteredUserController extends Controller
      */
     private function saveRoleSpecificData(User $user, Request $request, Role $role): void
     {
-        // Mapa de roles a modelos/tablas
-        $roleModelMap = [
-            'user' => 'App\Models\UserProfile', // No tiene tabla específica
-            'proveedor' => 'App\Models\ProviderProfile',
-            'vendedor' => 'App\Models\SellerProfile',
-            // Añade aquí nuevos roles en el futuro:
-            // 'delivery' => 'App\Models\DeliveryProfile',
+        // Mapa de roles a RELACIONES (no a modelos)
+        $roleRelationMap = [
+            'user' => 'userProfile',
+            'proveedor' => 'providerProfile', // 👈 Nombre del método en User.php
+            'vendedor'  => 'sellerProfile',
+            // 'delivery'  => 'deliveryProfile',
         ];
 
-        $modelName = $roleModelMap[$role->name] ?? null;
-
-        if ($modelName && class_exists($modelName)) {
+        if (isset($roleRelationMap[$role->name])) {
+            $relation = $roleRelationMap[$role->name];
             $fields = $role->metadata?->registration_fields ?? [];
             $data = $request->only(array_keys($fields));
-            $user->{$modelName::make()->getTable() . 's'}()->create($data);
+
+            // Ej: $user->providerProfile()->create($data)
+            $user->$relation()->create($data);
         }
     }
 }

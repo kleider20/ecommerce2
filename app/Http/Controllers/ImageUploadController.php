@@ -1,60 +1,84 @@
 <?php
 
-// app/Http/Controllers/ImageUploadController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use App\Models\Product;
+use App\Models\UserProfile;
+
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+
+use Exception;
 
 class ImageUploadController extends Controller
 {
-    public function upload(Request $request)
+    /**
+     * Sube y actualiza el avatar en la tabla user_profiles
+     */
+    public function uploadAvatar(Request $request)
     {
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'product_id' => 'required|integer|exists:products,id',
-        ]);
+        try {
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            ]);
 
-        // Obtener el producto y su proveedor
-        $product = Product::with('user')->findOrFail($request->product_id);
-        $providerId = $product->user_id;
-        $productId = $product->id;
+            $user = auth()->user();
+            $profile = UserProfile::firstOrCreate(['user_id' => $user->id]);
 
-        // Carpeta específica: products/{provider_id}/{product_id}
-        $folder = "products/{$providerId}/{$productId}";
+            $image = $request->file('image');
+            $filename = 'avatar-' . time() . '.webp';
+            $folder = "avatars/{$user->id}";
 
-        // Generar nombre único
-        $file = $request->file('image');
-        $filename = 'main-' . time() . '.' . $file->getClientOriginalExtension();
+            // ✅ Inicializar con ImageManager (v3+)
+            $manager = new ImageManager(new Driver());
+            $img = $manager->read($image);
 
-        // Guardar en storage/app/public/
-        $path = $file->storeAs("public/{$folder}", $filename);
+            // ✅ Redimensionar manteniendo proporción
+            $img->resize(500, 500, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
 
-        return response()->json([
-            'success' => true,
-            'url' => Storage::url(str_replace('public/', '', $path)), // URL pública
-            'path' => str_replace('public/', '', $path) // Ruta relativa para BD
-        ]);
+            // ✅ Codificar a WebP
+            $encoded = $img->toWebp(85)->toString();
+
+            Storage::disk('public')->put("{$folder}/{$filename}", $encoded);
+
+            // Eliminar avatar anterior
+            if ($profile->avatar && Storage::disk('public')->exists($profile->avatar)) {
+                Storage::disk('public')->delete($profile->avatar);
+            }
+
+            $profile->update(['avatar' => "{$folder}/{$filename}"]);
+
+            return response()->json([
+                'success' => true,
+                'url' => asset('storage/' . $profile->avatar),
+                'path' => $profile->avatar
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * Eliminar imágenes (General)
+     */
     public function destroy(Request $request)
     {
         $request->validate(['path' => 'required|string']);
 
-        // Validar ruta segura
-        if (preg_match('/^[a-zA-Z0-9\/._-]+$/', $request->path) &&
-            strpos($request->path, '..') === false) {
-
-            $fullPath = 'public/' . $request->path;
-            if (Storage::exists($fullPath)) {
-                Storage::delete($fullPath);
-                return response()->json(['success' => true]);
-            }
+        if (Storage::disk('public')->exists($request->path)) {
+            Storage::disk('public')->delete($request->path);
+            return response()->json(['success' => true]);
         }
 
-        return response()->json(['success' => false], 404);
+        return response()->json(['success' => false, 'message' => 'Archivo no encontrado'], 404);
     }
 }
+

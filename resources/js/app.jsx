@@ -14,6 +14,20 @@ import { createRoot } from 'react-dom/client';
 
 import { PrimeReactProvider } from 'primereact/api'; // ← necesarios
 
+// Laravel Echo + Pusher
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_CLUSTER,
+    forceTLS: true,
+    encrypted: true,
+});
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({

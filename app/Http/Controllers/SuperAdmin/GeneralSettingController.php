@@ -57,4 +57,17 @@ class GeneralSettingController extends Controller
 
         return back()->with('success', 'Configuración general actualizada correctamente.');
     }
+
+    public function updateLayoutYear(Request $request)
+    {
+        $request->validate([
+            'active_layout_year' => 'required|string|in:2024,2025,2026,2027'
+        ]);
+
+        GeneralSetting::firstOrCreate([])->update([
+            'active_layout_year' => $request->active_layout_year
+        ]);
+
+        return to_route('admin.settings')->with('success', 'Layout actualizado');
+    }
 }

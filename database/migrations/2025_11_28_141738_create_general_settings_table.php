@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('maintenance_message')->nullable();
             $table->string('logo_path')->nullable();
             $table->string('favicon_path')->nullable();
+            $table->string('active_layout_year')->default('2026'); // ← Año por defecto
             $table->timestamps(); // esto agrega created_at y updated_at
         });
     }

@@ -15,6 +15,7 @@ class GeneralSetting extends Model
         'maintenance_message',
         'logo_path',
         'favicon_path',
+        'active_layout_year',
     ];
 
     protected $casts = [
@@ -49,6 +50,12 @@ class GeneralSetting extends Model
                 'base_currency_code' => 'USD',
                 'maintenance_mode' => false,
             ]);
+    }
+
+    // Método estático para obtener el año activo
+    public static function getActiveLayoutYear(): string
+    {
+        return static::first()?->active_layout_year ?? '2026';
     }
 
     // Singleton con caché (corregido: incluye ambas relaciones)

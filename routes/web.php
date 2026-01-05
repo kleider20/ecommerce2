@@ -30,6 +30,8 @@ use Inertia\Inertia;
 // });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/channel.php';
+
 require __DIR__.'/home.php';
 require __DIR__.'/dashboard.php';
 
@@ -38,3 +40,11 @@ require __DIR__.'/superadmin.php';
 require __DIR__.'/product.php';
 require __DIR__.'/image.php';
 require __DIR__.'/roles.php';
+require __DIR__.'/legal.php';
+
+
+require __DIR__.'/notifications.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/profile.php';
+
+
