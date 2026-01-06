@@ -3,8 +3,9 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite"
+        "build": "node resources/js/utils/generate-layout-registry.js && vite build",
+        "dev": "node resources/js/utils/generate-layout-registry.js && vite",
+        "generate:layouts": "node resources/js/utils/generate-layout-registry.js"
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",

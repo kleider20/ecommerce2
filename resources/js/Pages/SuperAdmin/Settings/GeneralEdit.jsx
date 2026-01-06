@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 // Subcomponentes
 import GeneralInfoSection from './Components/GeneralInfoSection';
-import CurrencySettingsSection from './Components/CurrencySettingsSection';
+import AutoLayoutResolver from '@/Layouts/AutoLayoutResolver';
 import MaintenanceSection from './Components/MaintenanceSection';
 import PreviewPanel from './Components/PreviewPanel';
 
@@ -68,7 +68,7 @@ const GeneralSettingsEdit = ({ settings, countries }) => {
   };
 
   return (
-    <SuperAdminLayout>
+    <AutoLayoutResolver>
       <div className="mb-8">
         <div className="flex items-center space-x-3 mb-2">
           <Settings className="h-6 w-6 text-emerald-600" />
@@ -125,7 +125,7 @@ const GeneralSettingsEdit = ({ settings, countries }) => {
           />
         </div>
       </div>
-    </SuperAdminLayout>
+    </AutoLayoutResolver>
   );
 };
 

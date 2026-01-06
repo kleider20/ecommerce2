@@ -353,7 +353,7 @@
 // resources/js/Pages/SuperAdmin/Products/ProductCreate.jsx
 import React, { useState } from 'react';
 import SuperAdminLayout from '@/Layouts/SuperAdminLayout';
-import ProductCard from '@/Components/Custom/ProductCard';
+import ProductCard from '@/Components/Products/ProductCard';
 import MultiImageUploader from '@/Components/Custom/MultiImageUploader'; // 👈 Componente para múltiples imágenes
 import {
   Package as PackageIcon,

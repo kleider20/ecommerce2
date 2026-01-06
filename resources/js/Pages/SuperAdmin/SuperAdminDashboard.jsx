@@ -4,7 +4,7 @@ import {
   DollarSign, Building2, Users, CreditCard,
   TrendingUp, Clock, Shield, Activity, BarChart3
 } from 'lucide-react';
-import PageWrapper from '@/Layouts/PageWrapper';
+import AutoLayoutResolver from '@/Layouts/AutoLayoutResolver';
 
 const DashboardPage = () => {
   const currentDate = new Date().toLocaleDateString('es-ES', {
@@ -54,7 +54,7 @@ const DashboardPage = () => {
   );
 
   return (
-    <PageWrapper>
+    <AutoLayoutResolver>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Panel de Super Administrador</h1>
@@ -158,7 +158,7 @@ const DashboardPage = () => {
           ))}
         </div>
       </div>
-    </PageWrapper>
+    </AutoLayoutResolver>
   );
 };
 

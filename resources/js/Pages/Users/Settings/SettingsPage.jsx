@@ -656,7 +656,7 @@ import LanguageRegionForm from './LanguageRegionForm';
 import SecurityForm from './SecurityForm';
 import PreferencesForm from './PreferencesForm';
 
-import PageWrapper from '@/Layouts/PageWrapper';
+import AutoLayoutResolver from '@/Layouts/AutoLayoutResolver';
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('basic'); // 👈 Cambiado a 'basic'
@@ -713,7 +713,7 @@ const SettingsPage = () => {
   ];
 
   return (
-    <PageWrapper>
+    <AutoLayoutResolver>
       <Head title="Configuración" />
 
       <div className="max-w-6xl mx-auto space-y-8">
@@ -763,7 +763,7 @@ const SettingsPage = () => {
           </div>
         </div>
       </div>
-    </PageWrapper>
+    </AutoLayoutResolver>
   );
 };
 

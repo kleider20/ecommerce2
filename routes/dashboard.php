@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Provider\ProductController;
-use App\Http\Controllers\SuperAdmin\GeneralSettingController;
+
 
 use App\Http\Controllers\SuperAdmin\CurrencySettingController;
 use App\Http\Controllers\CountryController;
@@ -25,9 +25,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('proveedor/listar-productos', [ProductController::class, 'index']) ->name('products.index');
         Route::get('proveedor/crear-producto', [ProductController::class, 'create']) ->name('products.create');
-
-        Route::get('/settings/general', [GeneralSettingController::class, 'edit'])->name('settings.general.edit');
-        Route::put('/settings/general', [GeneralSettingController::class, 'update'])->name('settings.general.update');
 
 
         Route::get('/settings/currency', [CurrencySettingController::class, 'edit'])->name('settings.currency.edit');

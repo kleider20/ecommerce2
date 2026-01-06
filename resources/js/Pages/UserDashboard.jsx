@@ -1,6 +1,6 @@
 // resources/js/Pages/Users/UserDashboard.jsx
 import React, { lazy, Suspense } from 'react';
-import { resolveLayout } from '@/Layouts/LayoutResolver';
+import { resolveLayout } from '@/utils/LayoutResolver';
 
 const UserDashboard = ({ auth, layoutYear, userRole }) => {
   // Cargar layout dinámicamente

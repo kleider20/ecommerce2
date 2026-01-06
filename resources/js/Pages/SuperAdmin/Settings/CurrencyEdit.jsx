@@ -1,6 +1,6 @@
 // resources/js/Pages/SuperAdmin/Settings/CurrencyEdit.jsx
 import React, { useState } from 'react';
-import SuperAdminLayout from '@/Layouts/SuperAdminLayout';
+import AutoLayoutResolver from '@/Layouts/AutoLayoutResolver';
 import BaseCurrencySelector from './Components/BaseCurrencySelector';
 import CountryExchangeRates from './Components/CountryExchangeRates';
 
@@ -10,7 +10,7 @@ const CurrencyEdit = ({ settings, countries }) => {
   );
 
   return (
-    <SuperAdminLayout>
+    <AutoLayoutResolver>
       <div className="mx-auto p-6">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Configuración de Moneda</h1>
@@ -35,7 +35,7 @@ const CurrencyEdit = ({ settings, countries }) => {
           />
         </div>
       </div>
-    </SuperAdminLayout>
+    </AutoLayoutResolver>
   );
 };
 

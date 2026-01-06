@@ -7,6 +7,8 @@ use App\Http\Controllers\CountryController;
 
 use App\Http\Controllers\User\UserBasicProfileController;
 
+use Inertia\Inertia;
+
 
 // API para el perfil de usuario
 Route::middleware(['auth'])->group(function () {

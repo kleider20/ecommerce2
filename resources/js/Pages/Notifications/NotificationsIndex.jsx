@@ -144,7 +144,7 @@ import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { Bell, AlertCircle, Package, Gift, Star } from 'lucide-react';
 import { toast } from 'react-toastify';
-import PageWrapper from '@/Layouts/PageWrapper';
+import PageWrapper from '@/Layouts/AutoLayoutResolver';
 
 const NotificationsIndex = ({ notifications }) => {
   const [notificationsList, setNotificationsList] = useState(notifications.data);
@@ -181,7 +181,7 @@ const NotificationsIndex = ({ notifications }) => {
   };
 
   return (
-    <PageWrapper>
+    <AutoLayoutResolver>
       <Head title="Notificaciones" />
 
       <div className="space-y-6">
@@ -242,7 +242,7 @@ const NotificationsIndex = ({ notifications }) => {
           )}
         </div>
       </div>
-    </PageWrapper>
+    </AutoLayoutResolver>
   );
 };
 

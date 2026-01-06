@@ -2,7 +2,6 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Package, Truck, MapPin, Clock } from 'lucide-react';
-import PageWrapper from '@/Layouts/PageWrapper';
 
 const OrderDetail = ({ order }) => {
   return (

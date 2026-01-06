@@ -19,6 +19,15 @@ import {
 // ✅ Configuración centralizada con soporte para submenús
 export const sidebarRoutes = [
   // === Rutas comunes ===
+
+  {
+    id: 'home',
+    label: 'Inicio',
+    icon: Home,
+    routeName: '/',
+    permission: null,
+    roles: ['all']
+  },
   {
     id: 'dashboard',
     label: 'Dashboard',
@@ -28,6 +37,16 @@ export const sidebarRoutes = [
     roles: ['all']
   },
 
+//   {
+//     id: 'profile',
+//     label: 'Mi Perfil',
+//     icon: Home,
+//     routeName: 'profile',
+//     permission: null,
+//     roles: ['all']
+//   },
+
+
   // === Rutas de usuario ===
   {
     id: 'user_settings',
@@ -36,6 +55,17 @@ export const sidebarRoutes = [
     routeName: 'user.settings',
     permission: '',
     roles: ['super_admin','user', 'proveedor', 'vendedor']
+  },
+
+
+   // === Rutas de usuario ===
+  {
+    id: 'system_config',
+    label: 'Configuración General',
+    icon: Settings,
+    routeName: 'system.config',
+    permission: '',
+    roles: ['super_admin']
   },
 
 //   // === Rutas de administración con submenú ===

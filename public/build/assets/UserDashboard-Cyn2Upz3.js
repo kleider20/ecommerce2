@@ -1,1 +1,0 @@
-import{r as e,j as r}from"./app-CU0P3dLZ.js";import{r as t}from"./LayoutResolver-CwozRvBF.js";const d=({auth:s,layoutYear:o,userRole:a})=>{const n=e.lazy(()=>t(o,a));return r.jsx(e.Suspense,{fallback:r.jsx("div",{children:"Cargando layout..."}),children:r.jsx(n,{user:s.user,children:r.jsxs("h1",{children:["Bienvenido, ",s.user.name,"!"]})})})};export{d as default};

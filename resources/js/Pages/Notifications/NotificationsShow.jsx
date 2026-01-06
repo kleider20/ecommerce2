@@ -242,7 +242,7 @@ import React from 'react';
 import { Head, router } from '@inertiajs/react';
 import { ArrowLeft, Package, Truck, Gift, Star, User, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import PageWrapper from '@/Layouts/PageWrapper';
+import AutoLayoutResolver from '@/Layouts/AutoLayoutResolver';
 
 const NotificationDetail = ({ notification }) => {
   const deleteNotification = () => {
@@ -278,7 +278,7 @@ const NotificationDetail = ({ notification }) => {
   const colorClass = getColor(notification.type);
 
   return (
-    <PageWrapper>
+    <AutoLayoutResolver>
       <Head title={`Notificación - ${notification.message}`} />
 
       <div className="space-y-6">
@@ -345,7 +345,7 @@ const NotificationDetail = ({ notification }) => {
           </div>
         </div>
       </div>
-    </PageWrapper>
+    </AutoLayoutResolver>
   );
 };
 

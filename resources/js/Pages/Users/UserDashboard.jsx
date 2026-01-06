@@ -21,7 +21,7 @@
 // resources/js/Pages/Users/UserDashboard.jsx
 import React, { useState } from 'react';
 import { Package, CreditCard, Clock, Heart, MapPin } from 'lucide-react';
-import PageWrapper from '@/Layouts/PageWrapper';
+import AutoLayoutResolver from '@/Layouts/AutoLayoutResolver';
 
 // Componentes reutilizables (sin lazy si los usas en dashboard)
 import StatCard from '@/Layouts/components/StatCard';
@@ -47,7 +47,7 @@ const UserDashboard = ({
   ];
 
   return (
-    <PageWrapper>
+    <AutoLayoutResolver>
       <div className="space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard title="Pedidos Totales" value={stats?.totalOrders || 0} icon={Package} />
@@ -72,7 +72,7 @@ const UserDashboard = ({
           </div>
         )}
       </div>
-    </PageWrapper>
+    </AutoLayoutResolver>
   );
 };
 

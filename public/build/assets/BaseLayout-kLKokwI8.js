@@ -1,0 +1,1 @@
+import{j as s}from"./app-_a53eJXV.js";const t=({children:a,user:e})=>s.jsx("div",{className:"min-h-screen bg-gray-100",children:s.jsx("main",{className:"container mx-auto px-4 py-8",children:a})});export{t as default};
